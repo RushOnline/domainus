@@ -1,0 +1,52 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 627af9c..e3aac64 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -102,6 +102,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
+                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                            $<INSTALL_INTERFACE:include>)
+ target_link_libraries(${PROJECT_NAME} ${LIB_LIST})
++
++if (TGBOT_DISABLE_FILESYSTEM)
++    target_compile_definitions(${PROJECT_NAME} PUBLIC -DTGBOT_DISABLE_FILESYSTEM=1)
++endif()
++
++if (INSTALL_BINARIES)
+ include(GNUInstallDirs)
+ install(TARGETS ${PROJECT_NAME}
+         EXPORT ${PROJECT_NAME}-targets
+@@ -113,6 +119,8 @@ install(EXPORT ${PROJECT_NAME}-targets
+         NAMESPACE ${PROJECT_NAME}::
+         FILE ${PROJECT_NAME}Config.cmake
+         DESTINATION lib/cmake/${PROJECT_NAME})
++endif()
++
+ set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
+ 
+ # ABI version
+diff --git a/src/types/InputFile.cpp b/src/types/InputFile.cpp
+index 2deb082..ae15560 100644
+--- a/src/types/InputFile.cpp
++++ b/src/types/InputFile.cpp
+@@ -1,7 +1,9 @@
+ #include "tgbot/types/InputFile.h"
+ #include "tgbot/tools/FileTools.h"
+ 
++#if TGBOT_DISABLE_FILESYSTEM != 1
+ #include <filesystem>
++#endif
+ #include <memory>
+ #include <string>
+ 
+@@ -11,7 +13,11 @@ InputFile::Ptr InputFile::fromFile(const std::string& filePath, const std::strin
+     auto result(std::make_shared<InputFile>());
+     result->data = FileTools::read(filePath);
+     result->mimeType = mimeType;
++#if TGBOT_DISABLE_FILESYSTEM
++    result->fileName = filePath;
++#else
+     result->fileName = std::filesystem::path(filePath).filename().string();
++#endif
+     return result;
+ }
+ 

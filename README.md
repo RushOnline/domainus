@@ -1,0 +1,2 @@
+- Тулчейн для роутера: ~/workspace/rush/router/padavan-ng/toolchain/out
+- ~/workspace/rush/router/padavan-ng/trunk/include/cross-mipsel-linux.cmake
