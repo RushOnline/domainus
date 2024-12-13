@@ -9,16 +9,6 @@
 
 #include "Application.h"
 
-#if 0
-#if defined(__x86_64__)
-#   define DOMAINS_FILENAME "domains.txt"
-#   define DNSMASQ_CONFIG "domains-list.conf"
-#else
-#   define DOMAINS_FILENAME "/opt/etc/domains.txt"
-#   define DNSMASQ_CONFIG "/etc/storage/dnsmasq/domains-list.conf"
-#endif
-#endif
-
 bool get_domain(const String& url, String& domain)
 {
     bool rv = false;
