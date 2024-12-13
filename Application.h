@@ -1,6 +1,7 @@
 #ifndef __DOMAINUS_APPLICATION_H__
 #define __DOMAINUS_APPLICATION_H__
 
+#include <cstdint>
 #include <memory>
 
 #include <tgbot/tgbot.h>
@@ -37,6 +38,7 @@ private:
     String      _dbpath;            //< domains filename
     String      _cfpath;            //< dnsmasq domains config
     String      _restart_script;    //< restart script filename
+    std::list<int64_t> _chatids;        //< authorized chat ids
 };
 
 #endif//__DOMAINUS_APPLICATION_H__

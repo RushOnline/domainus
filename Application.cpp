@@ -57,6 +57,18 @@ void Application::init(int argc, char *argv[])
     if (!restart_script) throw std::runtime_error("DOMAINUS_DNSMASQ_RESTART_SCRIPT env var not set");
     _restart_script = restart_script;
 
+    auto sids = ::getenv("DOMAINUS_USERS");
+    if (!sids) throw std::runtime_error("DOMAINUS_USERS env var not set");
+    std::istringstream ssids(sids);
+
+    String sid;
+    while (std::getline(ssids, sid, ':'))
+    {
+        printf("sid: %s\n", sid.c_str());
+        _chatids.push_back(std::stoll(sid));
+    }
+
+
     std::ifstream ifs(_dbpath);
 
     if (!ifs)
@@ -74,8 +86,18 @@ void Application::init(int argc, char *argv[])
 
 int Application::run()
 {
+    getBotEvents().onCommand("id", [this](TgBot::Message::Ptr message) {
+        getBotApi().sendMessage(message->chat->id, std::to_string(message->chat->id));
+    });
+
     getBotEvents().onAnyMessage([this](TgBot::Message::Ptr message) {
         printf("User wrote %s\n", message->text.c_str());
+
+        if (std::find(_chatids.begin(), _chatids.end(), message->chat->id) == _chatids.end()) {
+            printf("  error: user not authorized\n");
+            return;
+        }
+
         if (StringTools::startsWith(message->text, "удали")) {
 
             std::istringstream ss(message->text.substr(String("удали ").size()));
