@@ -24,3 +24,9 @@ make -C build/mips
 
 # Set RPATH to match binaries from toolchain sysroot
 patchelf --set-rpath /opt/xlib build/mips/domainus
+
+# Strip executable
+strip build/mips/domainus
+
+echo "Run the next command to copy binary to router:"
+echo "scp build/mips/domainus router:/opt/sbin/domainus"
