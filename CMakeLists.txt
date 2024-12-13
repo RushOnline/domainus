@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+# В версии 3.16, поставляемой в Ubuntu 20.04, страдает поддержка FetchContent
+cmake_minimum_required(VERSION 3.31)
 
 project(test)
+
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,7 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BOOST_FILESYSTEM_DISABLE_GETRANDOM ON CACHE BOOL "Disable usage of getrandom API in Boost.Filesystem")
 
 # Собираем только необходимые библиотеки Boost
-set(BOOST_INCLUDE_LIBRARIES filesystem property_tree variant asio lexical_cast algorithm)
+set(BOOST_INCLUDE_LIBRARIES filesystem property_tree variant asio lexical_cast algorithm program_options)
 
 include(FetchContent)
 
@@ -43,12 +46,23 @@ set(TGBOT_DISABLE_FILESYSTEM ON)
 FetchContent_Declare(
     tgbot
     URL https://github.com/reo7sp/tgbot-cpp/archive/refs/tags/v1.8.zip
-    PATCH_COMMAND patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/tgbot-v1.8.patch
+    PATCH_COMMAND patch -p1 -i ${CMAKE_CURRENT_SOURCE_DIR}/tgbot-v1.8.patch
     DOWNLOAD_EXTRACT_TIMESTAMP true
     OVERRIDE_FIND_PACKAGE
 )
 
-FetchContent_MakeAvailable(curl boost tgbot)
+FetchContent_Declare(fmt
+    URL https://github.com/fmtlib/fmt/releases/download/11.0.2/fmt-11.0.2.zip
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+    OVERRIDE_FIND_PACKAGE
+)
 
-add_executable(domainus main.cpp)
-target_link_libraries(domainus PRIVATE TgBot)
+FetchContent_MakeAvailable(curl boost tgbot fmt)
+
+add_executable(domainus
+    main.cpp
+    Application.h
+    Application.cpp
+    )
+
+target_link_libraries(domainus PRIVATE TgBot fmt)
