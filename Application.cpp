@@ -84,10 +84,6 @@ void Application::init(int argc, char *argv[])
 
 int Application::run()
 {
-    getBotEvents().onCommand("start", [this](TgBot::Message::Ptr message) {
-        getBotApi().sendMessage(message->chat->id, "Hi!");
-    });
-
     getBotEvents().onAnyMessage([this](TgBot::Message::Ptr message) {
         printf("User wrote %s\n", message->text.c_str());
         if (StringTools::startsWith(message->text, "удали")) {
