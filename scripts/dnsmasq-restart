@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/usr/bin/killall dnsmasq
+sleep 1
+/usr/sbin/dnsmasq
+/sbin/mtd_storage.sh save

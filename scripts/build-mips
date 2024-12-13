@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+export CONFIG_TOOLCHAIN_DIR="$HOME/workspace/rush/router/padavan-ng/toolchain/out"
+export STAGEDIR="$HOME/workspace/rush/router/padavan-ng/trunk/stage"
+export ROOTDIR="$HOME/workspace/rush/router/padavan-ng/trunk"
+export LINUXDIR="linux-3.4.x"
+
+PROJECT_DIR=$PWD
+
+BUILD_DIR=$PROJECT_DIR/build/mips
+
+mkdir -p $BUILD_DIR
+
+cmake \
+        -B$BUILD_DIR \
+        -DCMAKE_TOOLCHAIN_FILE=$PROJECT_DIR/cmake/cross-mipsel-linux.cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        $PROJECT_DIR
+
+#cmake --build $BUILD_DIR
+make -C build/mips
+
+# Set RPATH to match binaries from toolchain sysroot
+patchelf --set-rpath /opt/xlib build/mips/domainus

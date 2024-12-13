@@ -1,0 +1,25 @@
+#!/bin/sh
+
+. /opt/etc/domainus/domainus.conf
+
+export DOMAINUS_TOKEN
+export DOMAINUS_DBPATH
+export DOMAINUS_CFPATH
+export DOMAINUS_DNSMASQ_RESTART_SCRIPT
+
+touch $DOMAINUS_DBPATH
+touch $DOMAINUS_CFPATH
+
+case "$1" in
+start)
+        /opt/sbin/domainus 2>&1 > /dev/null &
+        echo $! > /var/run/domainus.pid
+        ;;
+stop)
+        killall domainus
+        ;;
+*)
+        echo "Usage: $0 {start|stop}"
+        exit 1
+        ;;
+esac
